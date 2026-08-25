@@ -1,0 +1,56 @@
+stations:
+  Material Room:
+    x: -3.0
+    y: 1.0
+    qz: 0.0
+    qw: 1.0
+    timer: 1.0
+    pin: Up
+    mode: Auto
+  Line11:
+    x: -1.0
+    y: 1.0
+    qz: 0.0
+    qw: 1.0
+    timer: 1.0
+    pin: Up
+    mode: Auto
+  Line12:
+    x: -1.0
+    y: 0.25
+    qz: -0.7071
+    qw: 0.7071
+    timer: 1.0
+    pin: Up
+    mode: Auto
+  Line13:
+    x: 3.0
+    y: 0.25
+    qz: 0.0
+    qw: 1.0
+    timer: 1.0
+    pin: Up
+    mode: Auto
+  Line14:
+    x: 3.0
+    y: 4.0
+    qz: 0.7071
+    qw: 0.7071
+    timer: 1.0
+    pin: Up
+    mode: Auto
+  Line15:
+    x: 7.0
+    y: 4.0
+    qz: 0.0
+    qw: 1.0
+    timer: 1.0
+    pin: Up
+    mode: Auto
+mission_route:
+- Material Room
+- Line11
+- Line12
+- Line13
+- Line14
+- Line15

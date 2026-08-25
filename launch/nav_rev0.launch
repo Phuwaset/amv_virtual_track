@@ -1,0 +1,51 @@
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+  <arg name="map_file" default="$(env HOME)/turtlebot3_ws/map/house_map_rev00.yaml"/>
+  <arg name="open_rviz" default="true"/>
+  <arg name="rviz_config" default="$(find amv_virtual_track)/rviz/rviz_custom.rviz"/>
+
+  <!-- พิกัดเริ่มต้นที่ Material Room -->
+  <arg name="initial_pose_x" default="-6.5"/>
+  <arg name="initial_pose_y" default="-3.0"/>
+  <arg name="initial_pose_yaw_deg" default="90.0"/>
+  <arg name="initial_pose_a" default="$(eval float(arg('initial_pose_yaw_deg')) * 3.14159265359 / 180.0)"/>
+
+  <!-- 1. Robot State Publisher -->
+  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+    <arg name="model" value="$(arg model)" />
+  </include>
+
+  <!-- 2. Map Server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- 3. AMCL Localization -->
+  <include file="$(find turtlebot3_navigation)/launch/amcl.launch">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <!-- 4. RViz Custom Display -->
+  <group if="$(arg open_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(arg rviz_config)" />
+  </group>
+
+  <!-- 5. Node แสดงสถานี (ป้ายชื่อทอง + ลูกศรส้ม) -->
+  <node pkg="amv_virtual_track" type="station_marker_node.py" name="station_marker_node" output="screen">
+    <param name="csv_path" value="$(find amv_virtual_track)/config/station_list.csv" />
+  </node>
+
+  <!-- 6. Node บันทึก Waypoints (จุดฟ้า + ป้ายชื่อ + ลูกศรแดง) -->
+  <node pkg="amv_service" type="waypoint_recorder_node.py" name="waypoint_recorder_node" output="screen">
+    <param name="csv_path" value="$(find amv_virtual_track)/config/waypoint_follower_list.csv" />
+    <param name="yaml_path" value="$(find amv_virtual_track)/config/waypoints.yaml" />
+  </node>
+
+  <!-- 7. Node Topological Graph Planner & Localization Monitor -->
+  <node pkg="amv_virtual_track" type="path_planner_node.py" name="path_planner_node" output="screen">
+    <param name="station_csv" value="$(find amv_virtual_track)/config/station_list.csv" />
+    <param name="waypoint_csv" value="$(find amv_virtual_track)/config/waypoint_follower_list.csv" />
+  </node>
+
+</launch>
